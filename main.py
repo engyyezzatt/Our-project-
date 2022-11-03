@@ -9,6 +9,4 @@ if __name__ == '__main__':
 
     myApp.exec_()
 
-# Ay Comment For testing
 
-##Comment2 for testing
