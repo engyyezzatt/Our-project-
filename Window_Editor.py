@@ -24,6 +24,7 @@ class WindowEditor(QWidget):
         # self.myGrScene =self.myScene.myGrScene
 
         node = Node(self.myScene, "My Awesome Node", inputs=[1, 2, 3], outputs=[1])
+        node = Node(self.myScene, "Second Node", inputs=[1, 2], outputs=[1])
         nodeContent = NodeContent()
 
         # create the graphic view
