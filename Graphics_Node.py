@@ -37,7 +37,7 @@ class GraphicsNode(QGraphicsItem):
 
     def initSizes(self):
         """Set up internal attributes like `width`, `height`, etc."""
-        self.width = 200
+        self.width = 230
         self.height = 240
 
         self.edge_roundness = 10
