@@ -4,6 +4,7 @@ from PyQt5.QtCore import *
 
 from Graphics_Socket import QDMGraphicSocket
 from node_edge import Edge, EDGE_TYPE_BEZIER
+from node_graphics_edge import QDMGraphicsEdge
 
 MODE_NOOP = 1
 MODE_EDGE_DRAG = 2
@@ -146,7 +147,22 @@ class CrGraphicsView(QGraphicsView):
     #         self.dragEdge.grEdge.setDestination(pos.x(), pos.y())
     #
     #     super().mouseMoveEvent(event)
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Delete:
+            self.deleteSelected()
+        else:
+            super().keyPressEvent(event)
+# delete selected item in scene
+    def deleteSelected(self):
+        for item in self.grScene.selectedItems():
+            if isinstance(item, QDMGraphicsEdge):
+                item.edge.remove()
+            elif hasattr(item, 'node'):
+                item.node.remove()
 
+    def debug_modifiers(self, event):
+        out = "MODS: "
+        if event.modifiers() & Qt.ShiftModifier: out += "SHIFT "
 
     def getItemAtClick(self, event):
         """return the object on which we've clicked/release mouse button"""
@@ -224,5 +240,15 @@ class CrGraphicsView(QGraphicsView):
         # set scene scale
         if not clamped or self.zoomClamp is False:
             self.scale(zoomFactor, zoomFactor)
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Delete:
+            self.deleteSelected()
+            if not self.editingFlag:
+                self.deleteSelected()
+            else:
+                super().keyPressEvent(event)
+        else:
+            super().keyPressEvent(event)
 
 
