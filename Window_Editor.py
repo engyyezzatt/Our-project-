@@ -4,7 +4,7 @@ from PyQt5 import QtGui
 from Graphic_View import *
 from Node_Scene import *
 from Draw_Node import *
-from Node_Socket import Socket
+from node_edge import *
 
 
 class WindowEditor(QWidget):
@@ -23,9 +23,9 @@ class WindowEditor(QWidget):
         self.myScene = Scene()
         # self.myGrScene =self.myScene.myGrScene
 
-        node = Node(self.myScene, "My Awesome Node", inputs=[1, 2, 3], outputs=[1])
-        node = Node(self.myScene, "Second Node", inputs=[1, 2], outputs=[1])
-        nodeContent = NodeContent()
+        self.addNodes()
+
+        # nodeContent = NodeContent()
 
         # create the graphic view
         self.view = CrGraphicsView(self.myScene.myGrScene, self)
@@ -35,3 +35,28 @@ class WindowEditor(QWidget):
         self.setWindowTitle("VP")
 
         self.show()
+
+    def addNodes(self):
+        node1 = Node(self.myScene, "Node 1", inputs=[1, 2, 3], outputs=[1])
+        node2 = Node(self.myScene, "Node 2", inputs=[1, 2, 3], outputs=[1])
+        node3 = Node(self.myScene, "Node 3", inputs=[1, 2, 3], outputs=[1])
+
+        node1.setpos(-350, -250)
+        node2.setpos(-75, 0)
+        node3.setpos(200, -150)
+
+        edge0 = Edge(self.myScene, node1.outputs[0], node2.inputs[1], edge_type=EDGE_TYPE_BEZIER)
+        # edge1 = Edge(self.myScene, node1.outputs[0], node2.inputs[1], edge_type=EDGE_TYPE_BEZIER)
+        # edge2 = Edge(self.myScene, node1.outputs[0], node2.inputs[2], edge_type=EDGE_TYPE_BEZIER)
+
+        # edge9 = Edge(self.myScene, node1.outputs[0], node3.inputs[0], edge_type=EDGE_TYPE_BEZIER)
+        # edge10 = Edge(self.myScene, node1.outputs[0], node3.inputs[1], edge_type=EDGE_TYPE_BEZIER)
+        # edge11 = Edge(self.myScene, node1.outputs[0], node3.inputs[2], edge_type=EDGE_TYPE_BEZIER)
+
+        edge3 = Edge(self.myScene, node2.outputs[0], node3.inputs[0], edge_type=EDGE_TYPE_BEZIER)
+        # edge4 = Edge(self.myScene, node2.outputs[0], node3.inputs[1], edge_type=EDGE_TYPE_BEZIER)
+        # edge5 = Edge(self.myScene, node2.outputs[0], node3.inputs[2], edge_type=EDGE_TYPE_BEZIER)
+
+        # edge6 = Edge(self.myScene, node1.outputs[0], node3.inputs[2], edge_type=EDGE_TYPE_BEZIER)
+        # edge7 = Edge(self.myScene, node1.outputs[0], node3.inputs[2], edge_type=EDGE_TYPE_BEZIER)
+        # edge8 = Edge(self.myScene, node1.outputs[0], node3.inputs[2], edge_type=EDGE_TYPE_BEZIER)

@@ -23,5 +23,3 @@ class NodeContent(QWidget):
         self.textEdit=QTextEdit()
         #self.textEdit.setStyleSheet('background-color:yellow')
         self.layout.addWidget(self.textEdit)
-
-
