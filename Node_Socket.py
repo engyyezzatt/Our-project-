@@ -8,17 +8,30 @@ RIGHT_BOTTOM = 4
 
 class Socket():
     def __init__(self, node, index=0, position=LEFT_TOP,socket_type=1):
-        self.position = LEFT_TOP
+
         self.node = node
         self.index = index
-        self.socket_type = socket_type
+        self.position = position
+        self.socket_type = socket_type # da w ely fl constractor w kman f class draw node lazmto en el node llma yt3mlha create tt3ml create b default 1 input
 
-        self.grSockets = QDMGraphicSocket(self.node.grNode, self.socket_type)
+        # print("Socket -- creating with", self.index, self.position, "for node", self.node)
+
+        self.grSockets = QDMGraphicSocket(self.node.grNode)
         self.grSockets.setPos(*self.node.getSocketPosition(index, position))
 
-        def setConnectedEdge(self, edge=None):
-            self.edge = edge
-            self.edge = edge
+        self.edge = None
 
-        def hasEdge(self):
-            return self.edge is not None
+
+    def getSocketPosition(self):
+        #print(" GSP: ", self.index, self.position, "node:", self.node)
+        res = self.node.getSocketPosition(self.index, self.position)
+        #print("  res", res)
+        return res
+
+    def setConnectedEdge(self, edge= None):
+        self.edge = edge
+
+
+# 3shan n7rk el edges m3 el sockets
+    def hasEdge(self):
+        return self.edge is not None

@@ -23,15 +23,22 @@ class Node():
         counter = 0
 
         for item in inputs:
-            socket = Socket(node=self, index=counter, position=LEFT_TOP, socket_type=item)
+            socket = Socket(node=self, index=counter, position=LEFT_TOP,socket_type =item )
             counter += 1
             self.inputs.append(socket)
 
         counter = 0
         for item in outputs:
-            socket = Socket(node=self, index=counter, position=RIGHT_BOTTOM,socket_type=item)
+            socket = Socket(node=self, index=counter, position=RIGHT_BOTTOM,socket_type =item)
             counter += 1
             self.outputs.append(socket)
+
+    @property
+    def pos(self):
+        return self.grNode.pos()
+
+    def setpos(self, x, y):
+        self.grNode.setPos(x,y)
 
     def getSocketPosition(self, index, position):
         x = 0 if (position in (LEFT_TOP, LEFT_BOTTOM)) else self.grNode.width
@@ -43,9 +50,10 @@ class Node():
             # start from top
             y = self.grNode.title_height + self.grNode.edge_padding + self.grNode.edge_roundness + index * 22
 
-        return x, y
+        return [x, y]
 
-def updateConnectedEdges(self):
+        # 3shan n7rk el edges m3 el sockets with one edge only not multiple
+    def updateConnectedEdges(self):
         for socket in self.inputs + self.outputs:
             if socket.hasEdge():
-                socket.edge.updatePositions()
+                socket.edge.updatePosition()
