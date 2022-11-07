@@ -25,4 +25,3 @@ class NodeContent(QWidget):
         self.layout.addWidget(self.textEdit)
 
 
-

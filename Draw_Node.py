@@ -33,9 +33,6 @@ class Node():
             counter += 1
             self.outputs.append(socket)
 
-    # def __self__(self):
-    #     return "<Node /s../s>" / (hex(id(self))[2:5], hex(id(self))[-3:])
-
     def getSocketPosition(self, index, position):
         x = 0 if (position in (LEFT_TOP, LEFT_BOTTOM)) else self.grNode.width
 
