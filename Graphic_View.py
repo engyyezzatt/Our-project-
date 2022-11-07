@@ -168,5 +168,3 @@ class CrGraphicsView(QGraphicsView):
         # set scene scale
         if not clamped or self.zoomClamp is False:
             self.scale(zoomFactor, zoomFactor)
-
-

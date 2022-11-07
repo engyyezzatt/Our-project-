@@ -22,4 +22,3 @@ class Socket():
 
         def hasEdge(self):
             return self.edge is not None
-
