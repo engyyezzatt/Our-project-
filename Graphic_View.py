@@ -127,6 +127,8 @@ class CrGraphicsView(QGraphicsView):
         obj = self.itemAt(pos)
         return obj
 
+
+
     def edgeDragEnd(self,item):
         """return true if skip the rest of the code """
         self.mode = MODE_NOOP
