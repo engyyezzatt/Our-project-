@@ -37,3 +37,4 @@ class QDMGraphicSocket(QGraphicsItem):
             2 * (self.radius + self.outline_width),
             2 * (self.radius + self.outline_width),
         )
+

@@ -1,16 +1,18 @@
+from collections import OrderedDict
+from Node_Serializable import *
 from node_graphics_edge import *
-
 
 EDGE_TYPE_DIRECT = 1
 EDGE_TYPE_BEZIER = 2
 
 DEBUG = False
 
-class Edge:
+
+class Edge(Serializable):
     def __init__(self, scene, start_socket, end_socket, edge_type=EDGE_TYPE_DIRECT):
-
+        super().__init__()
         self.myScene = scene
-
+        self.edge_type = edge_type
         self.start_socket = start_socket
         self.end_socket = end_socket
 
@@ -22,7 +24,7 @@ class Edge:
         self.grEdge = GraphicsEdgeDirect(self) if edge_type == EDGE_TYPE_DIRECT else GraphicsEdgeBezier(self)
 
         self.updatePosition()
-        if DEBUG: print("Edge: ", self.grEdge.posSource, "to ", self.grEdge.posDestination)
+        # if DEBUG: print("Edge: ", self.grEdge.posSource, "to ", self.grEdge.posDestination)
         self.myScene.myGrScene.addItem(self.grEdge)
         self.myScene.addEdge(self)
 
@@ -52,7 +54,27 @@ class Edge:
         self.start_socket = None
 
     def remove(self):
+        if DEBUG: print("# Removing Edge", self)
+        if DEBUG: print(" - remove edge from all sockets")
         self.remove_from_socket()
+        if DEBUG: print(" - remove grEdge")
         self.myScene.myGrScene.removeItem(self.grEdge)
         self.grEdge = None
-        self.myScene.removeEdge(self)
+        if DEBUG: print(" - remove edge from scene")
+        try:
+            self.myScene.removeEdge(self)
+        except ValueError:
+            pass
+        if DEBUG: print(" - everything is done.")
+
+
+    def serialize(self):
+        return OrderedDict([
+            ('id', self.id),
+            ('edge_type', self.edge_type),
+            ('start', self.start_socket.id),
+            ('end', self.end_socket.id),
+        ])
+
+    def deserialize(self, data, hashmap={}):
+        return False
