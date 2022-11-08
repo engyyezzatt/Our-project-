@@ -1,3 +1,5 @@
+from collections import OrderedDict
+from Node_Serializable import *
 from Graphics_Socket import *
 
 LEFT_TOP = 1
@@ -6,9 +8,9 @@ RIGHT_TOP = 3
 RIGHT_BOTTOM = 4
 
 
-class Socket():
+class Socket(Serializable):
     def __init__(self, node, index=0, position=LEFT_TOP,socket_type=1):
-
+        super().__init__()
         self.node = node
         self.index = index
         self.position = position
@@ -36,3 +38,14 @@ class Socket():
 # 3shan n7rk el edges m3 el sockets
     def hasEdge(self):
         return self.edge is not None
+
+    def serialize(self):
+        return OrderedDict([
+            ('id', self.id),
+            ('index', self.index),
+            ('position', self.position),
+            ('socket_type', self.socket_type),
+        ])
+
+    def deserialize(self, data, hashmap={}):
+        return False
