@@ -2,6 +2,7 @@ from Graphics_Node import *
 from Node_Content import *
 from Node_Socket import *
 
+DEBUG = False
 
 class Node():
     def __init__(self, scene, title="Node Undefined", inputs=[], outputs=[]):
@@ -60,3 +61,17 @@ class Node():
         for socket in self.inputs + self.outputs:
             if socket.hasEdge():
                 socket.edge.updatePosition()
+
+    def remove(self):
+        if DEBUG: print("> Removing Node", self)
+        if DEBUG: print(" - remove all edges from sockets")
+        for socket in (self.inputs+self.outputs):
+            if socket.hasEdge():
+                if DEBUG: print("    - removing from socket:", socket, "edge:", socket.edge)
+                socket.edge.remove()
+        if DEBUG: print(" - remove grNode")
+        self.scene.myGrScene.removeItem(self.grNode)
+        self.grNode = None
+        if DEBUG: print(" - remove node from the scene")
+        self.scene.removeNode(self)
+        if DEBUG: print(" - everything was done.")

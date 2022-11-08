@@ -22,7 +22,7 @@ class Edge:
         self.grEdge = GraphicsEdgeDirect(self) if edge_type == EDGE_TYPE_DIRECT else GraphicsEdgeBezier(self)
 
         self.updatePosition()
-        if DEBUG: print("Edge: ", self.grEdge.posSource, "to ", self.grEdge.posDestination)
+        #if DEBUG: print("Edge: ", self.grEdge.posSource, "to ", self.grEdge.posDestination)
         self.myScene.myGrScene.addItem(self.grEdge)
         self.myScene.addEdge(self)
 
@@ -52,7 +52,15 @@ class Edge:
         self.start_socket = None
 
     def remove(self):
+        if DEBUG: print("# Removing Edge", self)
+        if DEBUG: print(" - remove edge from all sockets")
         self.remove_from_socket()
+        if DEBUG: print(" - remove grEdge")
         self.myScene.myGrScene.removeItem(self.grEdge)
         self.grEdge = None
-        self.myScene.removeEdge(self)
+        if DEBUG: print(" - remove edge from scene")
+        try:
+            self.myScene.removeEdge(self)
+        except ValueError:
+            pass
+        if DEBUG: print(" - everything is done.")
