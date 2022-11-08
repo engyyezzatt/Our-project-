@@ -12,7 +12,7 @@ class Node():
 
         self.title = title
 
-        self.content = NodeContent()
+        self.content = NodeContent(self)
         self.grNode = GraphicsNode(self)
 
         self.scene.addNode(self)

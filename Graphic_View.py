@@ -30,6 +30,7 @@ class CrGraphicsView(QGraphicsView):
 
         self.setScene(self.myGrScene)
         self.mode = MODE_NOOP
+        self.editingFlag = False
 
 
     def initUI(self):
@@ -150,7 +151,10 @@ class CrGraphicsView(QGraphicsView):
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Delete:
-            self.deleteSelected()
+            if not self.editingFlag:
+                self.deleteSelected()
+            else:
+                super().keyPressEvent(event)
         else:
             super().keyPressEvent(event)
 

@@ -5,7 +5,8 @@ from PyQt5.QtCore import *
 
 
 class NodeContent(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, node, parent=None):
+        self.node = node
         super().__init__(parent)
 
         self.initUI()
@@ -22,4 +23,19 @@ class NodeContent(QWidget):
         self.layout.addWidget(self.wdg_label)
         self.textEdit=QTextEdit()
         #self.textEdit.setStyleSheet('background-color:yellow')
-        self.layout.addWidget(self.textEdit)
+        self.layout.addWidget(QDMTextEdit("Node"))
+
+    def setEditingFlag(self, value):
+        self.node.scene.myGrScene.views()[0].editingFlag = value
+
+
+
+class QDMTextEdit(QTextEdit):
+    def focusInEvent(self, event):
+        self.parentWidget().setEditingFlag(True)
+        super().focusInEvent(event)
+
+
+    def focusOutEvent(self, event):
+        self.parentWidget().setEditingFlag(False)
+        super().focusOutEvent(event)
