@@ -16,12 +16,13 @@ class Socket():
 
         # print("Socket -- creating with", self.index, self.position, "for node", self.node)
 
-        self.grSockets = QDMGraphicSocket(self.node.grNode)
+        self.grSockets = QDMGraphicSocket(self, self.socket_type)
         self.grSockets.setPos(*self.node.getSocketPosition(index, position))
 
         self.edge = None
 
-
+    def __str__(self):
+        return "<Socket %s..%s>" % (hex(id(self))[2:5], hex(id(self))[-3:])
     def getSocketPosition(self):
         #print(" GSP: ", self.index, self.position, "node:", self.node)
         res = self.node.getSocketPosition(self.index, self.position)

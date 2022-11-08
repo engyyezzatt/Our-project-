@@ -4,6 +4,7 @@ from node_graphics_edge import *
 EDGE_TYPE_DIRECT = 1
 EDGE_TYPE_BEZIER = 2
 
+DEBUG = False
 
 class Edge:
     def __init__(self, scene, start_socket, end_socket, edge_type=EDGE_TYPE_DIRECT):
@@ -21,8 +22,12 @@ class Edge:
         self.grEdge = GraphicsEdgeDirect(self) if edge_type == EDGE_TYPE_DIRECT else GraphicsEdgeBezier(self)
 
         self.updatePosition()
-
+        if DEBUG: print("Edge: ", self.grEdge.posSource, "to ", self.grEdge.posDestination)
         self.myScene.myGrScene.addItem(self.grEdge)
+        self.myScene.addEdge(self)
+
+    def __str__(self):
+        return "<Edge %s..%s>" % (hex(id(self))[2:5], hex(id(self))[-3:])
 
     def updatePosition(self):
         source_pos = self.start_socket.getSocketPosition()
@@ -34,6 +39,8 @@ class Edge:
             end_pos[0] += self.end_socket.node.grNode.pos().x()
             end_pos[1] += self.end_socket.node.grNode.pos().y()
             self.grEdge.setDestination(*end_pos)
+        else:
+            self.grEdge.setDestination(*source_pos)
         self.grEdge.update()
 
     def remove_from_socket(self):
