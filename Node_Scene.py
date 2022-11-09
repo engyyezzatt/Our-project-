@@ -1,7 +1,11 @@
 import json
+import os
+import sys
 from collections import OrderedDict
 from Node_Serializable import *
 from Graphic_Scene import *
+from Draw_Node import *
+from node_edge import *
 
 
 class Scene(Serializable):
@@ -31,28 +35,30 @@ class Scene(Serializable):
     def removeEdge(self, edge):
         self.edges.remove(edge)
 
+    def clear(self):
+        while len(self.nodes) > 0 :
+            self.nodes[0].remove()
+
     def saveToFile(self, filename):
         with open(filename, "w") as file:
             file.write(json.dumps(self.serialize(), indent=4))
         print("saving to", filename, "was successfull.")
 
-    def loadFromFile(self, filename):
+    def loadFromFile(self, filename=str):
         with open(filename, "r") as file:
             raw_data = file.read()
-            data = json.loads(raw_data, encoding='utf-8')
-            self.deserialize(data)
-
-    def saveToFile(self, filename):
-        with open(filename, "w") as file:
-            file.write( json.dumps( self.serialize(), indent=4 ) )
-        print("saving to", filename, "was successfull.")
-
-    def loadFromFile(self, filename):
-        with open(filename, "r") as file:
-            raw_data = file.read()
-            data = json.loads(raw_data, encoding='utf-8')
-            self.deserialize(data)
-
+            try:
+                if sys.version_info >= (3, 9):
+                    data = json.loads(raw_data)
+                else:
+                    data = json.loads(raw_data, encoding='utf-8')
+                self.filename = filename
+                self.deserialize(data)
+                # self.has_been_modified = False
+            # except json.JSONDecodeError:
+            #     raise InvalidFile("%s is not a valid JSON file" % os.path.basename(filename))
+            except Exception as e:
+                print(e)
 
     def serialize(self):
         nodes, edges = [], []
@@ -68,4 +74,41 @@ class Scene(Serializable):
 
     def deserialize(self, data, hashmap={}):
         print("deserializating data", data)
-        return False
+
+        self.clear()
+
+        hashmap ={}
+
+        # create nodes
+        for node_data in data['nodes']:
+            Node(self).deserialize(node_data, hashmap)
+
+        for edge_data in data['edges']:
+            Edge(self).deserialize(edge_data,hashmap)
+
+        # # create edges
+        # all_edges = self.edges.copy()
+        #
+        # # go through deserialized edges:
+        # for edge_data in data['edges']:
+        #     # can we find this node in the scene?
+        #     found = False
+        #     for edge in all_edges:
+        #         if edge.id == edge_data['id']:
+        #             found = edge
+        #             break
+        #
+        #     if not found:
+        #         new_edge = Edge(self).deserialize(edge_data, hashmap)
+        #         print("New edge for", edge_data)
+        #     else:
+        #         found.deserialize(edge_data, hashmap)
+        #         all_edges.remove(found)
+        #
+        # # remove nodes which are left in the scene and were NOT in the serialized data!
+        # # that means they were not in the graph before...
+        # while all_edges != []:
+        #     edge = all_edges.pop()
+        #     edge.remove()
+
+        return True
