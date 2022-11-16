@@ -13,6 +13,7 @@ EDGE_DRAG_START_THRESHOLD = 10
 
 DEBUG = True
 
+
 class CrGraphicsView(QGraphicsView):
     def __init__(self, myGrScene, parent=None):
         super().__init__(parent)
@@ -20,7 +21,7 @@ class CrGraphicsView(QGraphicsView):
 
         self.initUI()
 
-        self.last_scene_mouse_position = QPoint(0,0)
+        self.last_scene_mouse_position = QPoint(0, 0)
         self.zoomInFactor = 1.25
         self.zoomClamp = True
         self.zoom = 10
@@ -31,9 +32,9 @@ class CrGraphicsView(QGraphicsView):
         self.mode = MODE_NOOP
         self.editingFlag = False
 
-
     def initUI(self):
-        self.setRenderHints(QPainter.Antialiasing | QPainter.HighQualityAntialiasing | QPainter.TextAntialiasing | QPainter.SmoothPixmapTransform)
+        self.setRenderHints(
+            QPainter.Antialiasing | QPainter.HighQualityAntialiasing | QPainter.TextAntialiasing | QPainter.SmoothPixmapTransform)
 
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
 
@@ -68,14 +69,14 @@ class CrGraphicsView(QGraphicsView):
         else:
             super().mouseReleaseEvent(event)
 
-    def middleMouseButtonPress(self,event):
-        releaseEvent =QMouseEvent(QEvent.MouseButtonRelease,event.localPos(), event.screenPos(),
-                                  Qt.LeftButton,Qt.NoButton,event.modifiers())
+    def middleMouseButtonPress(self, event):
+        releaseEvent = QMouseEvent(QEvent.MouseButtonRelease, event.localPos(), event.screenPos(),
+                                   Qt.LeftButton, Qt.NoButton, event.modifiers())
         super().mouseReleaseEvent(releaseEvent)
         self.setDragMode(QGraphicsView.ScrollHandDrag)
 
-        fakeEvent = QMouseEvent(event.type(),event.localPos(),event.screenPos(),
-                                Qt.LeftButton, event.buttons()|Qt.LeftButton,event.modifiers())
+        fakeEvent = QMouseEvent(event.type(), event.localPos(), event.screenPos(),
+                                Qt.LeftButton, event.buttons() | Qt.LeftButton, event.modifiers())
         super().mousePressEvent(fakeEvent)
 
     def middleMouseButtonRelease(self, event: QMouseEvent):
@@ -121,8 +122,8 @@ class CrGraphicsView(QGraphicsView):
         item = self.getItemAtClick(event)
         if DEBUG:
             if isinstance(item, GraphicsEdge): print('RMB DEBUG:', item.edge, ' connecting sockets:',
-                                                        item.edge.start_socket, '<-->', item.edge.end_socket)
-            if type(item) is QDMGraphicSocket: print("RMB DEBUG: ", item.socket, 'has edge:', item.socket.edge)
+                                                     item.edge.start_socket, '<-->', item.edge.end_socket)
+            if type(item) is QDMGraphicSocket: print('RMB DEBUG:', item.socket, 'has edges:', item.socket.edges)
 
             if item is None:
                 print('SCENE: ')
@@ -130,9 +131,6 @@ class CrGraphicsView(QGraphicsView):
                 for node in self.myGrScene.scene.nodes: print('    ', node)
                 print(' Edges:')
                 for edge in self.myGrScene.scene.edges: print('    ', edge)
-
-
-
 
     def rightMouseButtonRelease(self, event):
         super().mouseReleaseEvent(event)
@@ -142,11 +140,10 @@ class CrGraphicsView(QGraphicsView):
     def mouseMoveEvent(self, event):
         if self.mode == MODE_EDGE_DRAG:
             pos = self.mapToScene(event.pos())
-            self.dragEdge.grEdge.setDestination(pos.x(), pos.y())
-            self.dragEdge.grEdge.update()
+            self.drag_edge.grEdge.setDestination(pos.x(), pos.y())
+            self.drag_edge.grEdge.update()
 
         super().mouseMoveEvent(event)
-
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Delete:
@@ -155,13 +152,12 @@ class CrGraphicsView(QGraphicsView):
             else:
                 super().keyPressEvent(event)
         elif event.key() == Qt.Key_S and event.modifiers() & Qt.ControlModifier:
-                self.myGrScene.scene.saveToFile("graph.json.txt")
+            self.myGrScene.scene.saveToFile("graph.json.txt")
         elif event.key() == Qt.Key_L and event.modifiers() & Qt.ControlModifier:
             self.myGrScene.scene.loadFromFile("graph.json.txt")
 
         else:
             super().keyPressEvent(event)
-
 
     def deleteSelected(self):
         for item in self.myGrScene.selectedItems():
@@ -169,7 +165,6 @@ class CrGraphicsView(QGraphicsView):
                 item.edge.remove()
             elif hasattr(item, 'node'):
                 item.node.remove()
-
 
     def getItemAtClick(self, event):
         pos = event.pos()
@@ -179,41 +174,37 @@ class CrGraphicsView(QGraphicsView):
     def edgeDragStart(self, item):
         if DEBUG: print('View::edgeDragStart ~ Start dragging edge')
         if DEBUG: print('View::edgeDragStart ~ assign Start Socket to:', item.socket)
-        self.previousEdge = item.socket.edge
-        self.las_start_socket = item.socket
-        self.dragEdge = Edge(self.myGrScene.scene, item.socket, None, EDGE_TYPE_BEZIER)
-        if DEBUG: print('View::edgeDragStart ~  dragEdge:', self.dragEdge)
+        self.drag_start_socket = item.socket
+        self.drag_edge = Edge(self.myGrScene.scene, item.socket, None, EDGE_TYPE_BEZIER)
+        if DEBUG: print('View::edgeDragStart ~   dragEdge:', self.drag_edge)
 
     def edgeDragEnd(self, item):
         self.mode = MODE_NOOP
 
-        if type(item) is QDMGraphicSocket:
-            if item.socket != self.las_start_socket:
-                if DEBUG: print('View::edgeDragEnd ~  , previous edge:', self.previousEdge)
-                if item.socket.hasEdge():
-                    item.socket.edge.remove()
-                if DEBUG: print('View::edgeDragEnd ~ Assign end socket', item.socket)
-                if self.previousEdge is not None: self.previousEdge.remove()
-                if DEBUG: print('View::edgeDragEnd ~ previous edge removed')
-                self.dragEdge.start_socket = self.las_start_socket
-                self.dragEdge.end_socket = item.socket
-                self.dragEdge.start_socket.setConnectedEdge(self.dragEdge)
-                self.dragEdge.end_socket.setConnectedEdge(self.dragEdge)
-                if DEBUG: print('View::edgeDragEnd ~  reassigned start & end sockets to drag edge')
-                self.dragEdge.updatePosition()
-
-                return True
-
         if DEBUG: print('View::edgeDragEnd ~ End dragging edge')
-        self.dragEdge.remove()
-        self.dragEdge = None
-        if DEBUG: print('View::edgeDragEnd ~ about to set socket to previous edge:', self.previousEdge)
-        if self.previousEdge is not None:
-            self.previousEdge.start_socket.edge = self.previousEdge
-        # if DEBUG: print('View::edgeDragEnd ~ about to set socket to previous edge:', self.previousEdge)
-        # if self.previousEdge is not None:
-        #     self.previousEdge.start_socket.edge = self.previousEdge
-        if DEBUG: print('View::edgeDragEnd ~ everything is done.')
+        self.drag_edge.remove()
+        self.drag_edge = None
+
+        if type(item) is QDMGraphicSocket:
+            if item.socket != self.drag_start_socket:
+                # if we released dragging on a socket (other than the beginning socket)
+
+                # we wanna keep all the edges coming from target socket
+                if not item.socket.is_multi_edges:
+                    item.socket.removeAllEdges()
+
+                # we wanna keep all the edges coming from start socket
+                if not self.drag_start_socket.is_multi_edges:
+                    self.drag_start_socket.removeAllEdges()
+
+                new_edge = Edge(self.myGrScene.scene, self.drag_start_socket, item.socket, edge_type=EDGE_TYPE_BEZIER)
+                if DEBUG: print("View::edgeDragEnd ~  created new edge:", new_edge, "connecting", new_edge.start_socket,
+                                "<-->", new_edge.end_socket)
+                #self.myGrScene.scene.history.storeHistory("Created new edge by dragging", setModified=True)
+
+            return True
+
+        self.myGrScene.scene.history.storeHistory("Created new edge by dragging", setModified=True)
 
         return False
 
@@ -222,6 +213,7 @@ class CrGraphicsView(QGraphicsView):
         dist_scene = new_lmb_release_scene_pos - self.last_lmb_click_scene_pos
         edge_drag_threshold_sq = EDGE_DRAG_START_THRESHOLD * EDGE_DRAG_START_THRESHOLD
         return (dist_scene.x() * dist_scene.x() + dist_scene.y() * dist_scene.y()) > edge_drag_threshold_sq
+
     def wheelEvent(self, event: QWheelEvent):
         # calculate our zoom Factor
         zoomOutFactor = 1 / self.zoomInFactor
@@ -233,7 +225,6 @@ class CrGraphicsView(QGraphicsView):
         else:
             zoomFactor = zoomOutFactor
             self.zoom -= self.zoomStep
-
 
         clamped = False
         if self.zoom < self.zoomRange[0]:

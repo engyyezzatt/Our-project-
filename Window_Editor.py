@@ -28,7 +28,7 @@ class WindowEditor(QWidget):
         # nodeContent = NodeContent()
 
         # create the graphic view
-        self.view = CrGraphicsView(self.myScene.myGrScene, self)
+        self.view = CrGraphicsView(self.myScene.grScene, self)
         self.myLayout.addWidget(self.view)
 
         self.setWindowIcon(QIcon("VP logo Trial.png"))
